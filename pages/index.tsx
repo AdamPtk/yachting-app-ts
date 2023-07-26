@@ -1,55 +1,22 @@
-// import type { ReactElement } from 'react';
-// import BaseLayout from 'components/BaseLayout';
-// import NestedLayout from '../components/nested-layout';
-// import type { NextPageWithLayout } from './_app';
-
-// const Page: NextPageWithLayout = () => {
-//   return <p>hello world</p>;
-// };
-
-// Page.getLayout = function getLayout(page: ReactElement) {
-//   return (
-//     <BaseLayout>
-//       <NestedLayout>{page}</NestedLayout>
-//     </BaseLayout>
-//   );
-// };
-
-// export default Page;
-
 import BaseLayout from 'components/BaseLayout';
 import Link from 'next/link';
 import Image from 'next/image';
-// import useSWR from 'swr';
-// import getRecentOffers from 'services/offers/getRecent';
-// import { jsonFetcher } from 'utils';
+import useSWR from 'swr';
+import getRecentOffers from 'services/offers/getRecent';
+import { jsonFetcher } from 'utils';
 
-// export const getStaticProps = async () => {
-//   const offers = await getRecentOffers(12);
-//   return {
-//     props: { offers }
-//   };
-// };
+export const getStaticProps = async () => {
+  const offers = await getRecentOffers(12);
+  return {
+    props: { offers },
+  };
+};
 
-export default function Home() {
-  // const { data } = useSWR('/api/offers', jsonFetcher, { initialData: offers });
-  const data = [
-    {
-      title: 'Qwerty',
-      status: 'active',
-      id: 29,
-      mobile: '111111111',
-      price: 9.99,
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam officiis optio illum voluptatum adipisci exercitationem, error temporibus corporis cum assumenda eaque quod debitis porro alias quisquam repudiandae architecto voluptatem voluptatibus sequi quos ex deserunt. Harum id deserunt sint reiciendis magni, hic dicta eveniet quisquam doloremque consequuntur labore sed praesentium ea!\n',
-      category: 'rent',
-      users: ['recqLMg1HI27TKqrK'],
-      location: 'Qwerty',
-      createdAt: '2023-07-25T15:51:35.000Z',
-      updatedAt: '2023-07-25T17:25:13.000Z',
-      email: ['abc@xyz.com'],
-    },
-  ];
+export default function Home({ offers }: { offers: Offer[] }) {
+  const { data }: { data: Offer[] } = useSWR('/api/offers', jsonFetcher, {
+    fallbackData: offers,
+  });
+
   return (
     <BaseLayout>
       <section className="text-gray-600 body-font">
