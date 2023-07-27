@@ -14,8 +14,10 @@ const TopNavigation = () => {
 
   return (
     <nav className="flex items-center bg-gray-800 p-3 flex-wrap">
-      {/* <Link href={session ? '/offers' : '/'}> */}
-      <Link href="/" className="p-2 mr-4 inline-flex items-center">
+      <Link
+        href={session ? '/offers' : '/'}
+        className="p-2 mr-4 inline-flex items-center"
+      >
         <svg
           viewBox="0 0 24 24"
           xmlns="http://www.w3.org/2000/svg"
@@ -56,14 +58,15 @@ const TopNavigation = () => {
               <span>My offers</span>
             </a>
           </Link>
-        )}
+        )} */}
         {session && (
           <button
-            onClick={() => signOut('/')}
-            className="lg:inline-flex lg:w-auto w-full px-3 py-2 rounded text-gray-400 items-center justify-center hover:bg-gray-900 hover:text-white transition-all">
+            onClick={() => signOut()}
+            className="lg:inline-flex lg:w-auto w-full px-3 py-2 rounded text-gray-400 items-center justify-center hover:bg-gray-900 hover:text-white transition-all"
+          >
             <span>Logout</span>
           </button>
-        )} */}
+        )}
         {!session && !loading && (
           <Link
             href="/user/signin"
