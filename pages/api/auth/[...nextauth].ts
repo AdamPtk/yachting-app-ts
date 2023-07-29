@@ -15,11 +15,9 @@ export const authOptions: NextAuthOptions = {
           email: credentials.email,
           password: credentials.password,
         });
-        // If no error and we have user data, return it
         if (user) {
           return user;
         }
-        // Return null if user data could not be retrieved
         return null;
       },
     }),
@@ -35,9 +33,10 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      session.user.role = token?.role;
-      session.user.id = token?.id;
-
+      if (session && session.user) {
+        session.user.role = token?.role;
+        session.user.id = token?.id;
+      }
       return session;
     },
   },

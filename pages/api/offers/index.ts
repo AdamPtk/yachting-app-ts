@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-// import { getServerSession } from 'next-auth/next';
-// import { authOptions } from 'pages/api/auth/[...nextauth]';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
 import getRecentOffers from 'services/offers/getRecent';
 import createOffer from 'services/offers/create';
 
@@ -14,17 +14,16 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
     case 'POST': {
       try {
-        // const session = await getServerSession(req, res, authOptions);
-        // if (!session) {
-        //   return res
-        //     .status(401)
-        //     .json({ error: { details: [{ message: 'not_authorized' }] } });
-        // }
+        const session = await getServerSession(req, res, authOptions);
+        if (!session) {
+          return res
+            .status(401)
+            .json({ error: { details: [{ message: 'not_authorized' }] } });
+        }
 
         const payload = req.body;
-        // const userId = session.user.id;
-        // userId
-        const offer = await createOffer(payload);
+        const userId = session.user.id;
+        const offer = await createOffer(payload, userId);
         res.status(200).json({ status: 'created', offer });
       } catch (error) {
         res.status(422).json({ status: 'not_created', error });

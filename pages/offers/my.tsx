@@ -1,27 +1,30 @@
-import BaseLayout from 'components/BaseLayout';
+import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getServerSession } from 'next-auth';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import getForUser from 'services/offers/getForUser';
+import BaseLayout from 'components/BaseLayout';
+import React from 'react';
 
-export const getServerSideProps = async ({ req, res }) => {
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const session = await getServerSession(req, res, authOptions);
-  if (!session) {
+  if (!session || !session.user || typeof session.user.email !== 'string') {
     return {
       redirect: {
         destination: '/user/signin',
-        permanent: false
-      }
+        permanent: false,
+      },
     };
   }
   const offers = await getForUser(session.user.email);
+
   return {
-    props: { offers }
+    props: { offers },
   };
 };
 
-export default function MyOffers({ offers }) {
+const MyOffers: React.FC<{ offers: Offer[] }> = ({ offers }) => {
   return (
     <BaseLayout>
       <section className="text-gray-600 body-font">
@@ -34,10 +37,15 @@ export default function MyOffers({ offers }) {
           </div>
           <div className="flex flex-wrap -m-4">
             {offers.length === 0 && (
-              <div className="w-full text-center py-4">You do not have any offers.</div>
+              <div className="w-full text-center py-4">
+                You do not have any offers.
+              </div>
             )}
             {offers.map((offer) => (
-              <div key={offer.id} className="xl:w-1/4 md:w-1/2 p-4 cursor-pointer">
+              <div
+                key={offer.id}
+                className="xl:w-1/4 md:w-1/2 p-4 cursor-pointer"
+              >
                 <Link href={`/offers/${offer.id}`}>
                   <div className="bg-gray-100 p-6 rounded-lg h-full hover:shadow-lg transition-all">
                     {offer.status === 'inactive' ? (
@@ -78,4 +86,6 @@ export default function MyOffers({ offers }) {
       </section>
     </BaseLayout>
   );
-}
+};
+
+export default MyOffers;

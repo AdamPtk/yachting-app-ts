@@ -6,10 +6,10 @@ import { handlePasswordHash } from 'utils';
 const schema = Joi.object({
   email: Joi.string().email().required(),
   fullName: Joi.string().required(),
-  password: Joi.string().required()
+  password: Joi.string().required(),
 });
 
-const checkEmail = async (email) => {
+const checkEmail = async (email: string) => {
   const existingUser = await airDB('users')
     .select({ filterByFormula: `email="${email}"` })
     .firstPage();
@@ -19,7 +19,7 @@ const checkEmail = async (email) => {
   }
 };
 
-const create = async (payload) => {
+const create = async (payload: RegisterPayload) => {
   const { email, fullName, password } = await schema.validateAsync(payload);
   await checkEmail(email);
   const passwordSalt = crypto.randomBytes(16).toString('hex');
@@ -32,9 +32,9 @@ const create = async (payload) => {
         fullName,
         passwordSalt,
         passwordHash,
-        role: 'regular'
-      }
-    }
+        role: 'regular',
+      },
+    },
   ]);
 
   return user;

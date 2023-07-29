@@ -1,4 +1,7 @@
-export default async (offset, category) => {
+const paginate = async <TData>(
+  offset: string = '',
+  category: string = '',
+): Promise<TData> => {
   let apiUrl = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE}/offers?pageSize=12&view=onlyActive`;
   if (offset) {
     apiUrl += `&offset=${offset}`;
@@ -8,10 +11,12 @@ export default async (offset, category) => {
   }
 
   const response = await fetch(apiUrl, {
-    headers: { Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}` }
+    headers: { Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}` },
   });
 
   const records = await response.json();
 
   return records;
 };
+
+export default paginate;

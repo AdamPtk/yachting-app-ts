@@ -1,25 +1,25 @@
-import { useRef, useState } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import BaseLayout from 'components/BaseLayout';
 
 export default function UserNew() {
   const [formProcessing, setFormProcessing] = useState(false);
-  const [error, setError] = useState(false);
-  const userForm = useRef();
+  const [error, setError] = useState('');
+  const userForm = useRef<HTMLFormElement>(null);
   const router = useRouter();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (formProcessing) return;
 
-    setError(null);
+    setError('');
     setFormProcessing(true);
 
-    const form = new FormData(userForm.current);
+    const form = new FormData(userForm.current || undefined);
     const payload = {
       email: form.get('email'),
       fullName: form.get('fullName'),
-      password: form.get('password')
+      password: form.get('password'),
     };
 
     if (payload.password !== form.get('passwordConfirm')) {
@@ -32,8 +32,8 @@ export default function UserNew() {
       method: 'POST',
       body: JSON.stringify(payload),
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     });
 
     if (response.ok) {
@@ -58,10 +58,17 @@ export default function UserNew() {
             </p>
           </div>
           <div className="lg:w-1/2 md:w-2/3 mx-auto">
-            <form className="flex flex-wrap -m-2" ref={userForm} onSubmit={handleSubmit}>
+            <form
+              className="flex flex-wrap -m-2"
+              ref={userForm}
+              onSubmit={handleSubmit}
+            >
               <div className="p-2 w-full">
                 <div className="relative">
-                  <label htmlFor="fullName" className="leading-7 text-sm text-gray-600">
+                  <label
+                    htmlFor="fullName"
+                    className="leading-7 text-sm text-gray-600"
+                  >
                     Full name
                   </label>
                   <input
@@ -75,7 +82,10 @@ export default function UserNew() {
               </div>
               <div className="p-2 w-full">
                 <div className="relative">
-                  <label htmlFor="email" className="leading-7 text-sm text-gray-600">
+                  <label
+                    htmlFor="email"
+                    className="leading-7 text-sm text-gray-600"
+                  >
                     E-mail
                   </label>
                   <input
@@ -89,7 +99,10 @@ export default function UserNew() {
               </div>
               <div className="p-2 w-full">
                 <div className="relative">
-                  <label htmlFor="password" className="leading-7 text-sm text-gray-600">
+                  <label
+                    htmlFor="password"
+                    className="leading-7 text-sm text-gray-600"
+                  >
                     Password
                   </label>
                   <input
@@ -103,7 +116,10 @@ export default function UserNew() {
               </div>
               <div className="p-2 w-full">
                 <div className="relative">
-                  <label htmlFor="passwordConfirm" className="leading-7 text-sm text-gray-600">
+                  <label
+                    htmlFor="passwordConfirm"
+                    className="leading-7 text-sm text-gray-600"
+                  >
                     Password confirm
                   </label>
                   <input
@@ -118,12 +134,15 @@ export default function UserNew() {
               <div className="p-2 w-full">
                 <button
                   disabled={formProcessing}
-                  className="disabled:opacity-50 flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 my-4 focus:outline-none hover:bg-indigo-600 rounded text-lg">
+                  className="disabled:opacity-50 flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 my-4 focus:outline-none hover:bg-indigo-600 rounded text-lg"
+                >
                   {formProcessing ? 'Please wait...' : 'Create new account'}
                 </button>
                 {error && (
                   <div className="flex justify-center w-full my-5">
-                    <span className="w-full text-red-600">Account not created: {error}</span>
+                    <span className="w-full text-red-600">
+                      Account not created: {error}
+                    </span>
                   </div>
                 )}
               </div>

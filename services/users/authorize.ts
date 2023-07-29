@@ -4,17 +4,17 @@ import { handlePasswordHash } from 'utils';
 
 const schema = Joi.object({
   email: Joi.string().email().required(),
-  password: Joi.string().required()
+  password: Joi.string().required(),
 });
 
-const authorize = async (payload) => {
+const authorize = async (payload: LoginPayload) => {
   const { email, password } = await schema.validateAsync(payload);
 
   const [user] = await airDB('users')
     .select({ filterByFormula: `email="${email}"` })
     .firstPage();
 
-  if (!user) {
+  if (!user || typeof user.fields.passwordSalt !== 'string') {
     return null;
   }
 
@@ -28,7 +28,7 @@ const authorize = async (payload) => {
     id: user.id,
     email: user.fields.email,
     fullName: user.fields.fullName,
-    role: user.fields.role
+    role: user.fields.role,
   };
 };
 
