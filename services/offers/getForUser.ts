@@ -1,4 +1,3 @@
-import { Records } from 'airtable';
 import airDB from 'services/airtableClient';
 
 const getForUser = async (email: string) => {

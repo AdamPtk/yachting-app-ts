@@ -1,11 +1,13 @@
+import React from 'react';
 import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getServerSession } from 'next-auth';
+import useSWR from 'swr';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import getForUser from 'services/offers/getForUser';
 import BaseLayout from 'components/BaseLayout';
-import React from 'react';
+import { jsonFetcher } from 'utils';
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const session = await getServerSession(req, res, authOptions);
@@ -17,6 +19,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
       },
     };
   }
+
   const offers = await getForUser(session.user.email);
 
   return {
@@ -25,6 +28,13 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
 };
 
 const MyOffers: React.FC<{ offers: Offer[] }> = ({ offers }) => {
+  const { data }: { data: Offer[] } = useSWR(
+    '/api/offers/getForUser',
+    jsonFetcher,
+    {
+      fallbackData: offers,
+    },
+  );
   return (
     <BaseLayout>
       <section className="text-gray-600 body-font">
@@ -36,12 +46,12 @@ const MyOffers: React.FC<{ offers: Offer[] }> = ({ offers }) => {
             <div className="h-1 w-20 bg-indigo-500 rounded"></div>
           </div>
           <div className="flex flex-wrap -m-4">
-            {offers.length === 0 && (
+            {data.length === 0 && (
               <div className="w-full text-center py-4">
                 You do not have any offers.
               </div>
             )}
-            {offers.map((offer) => (
+            {data.map((offer) => (
               <div
                 key={offer.id}
                 className="xl:w-1/4 md:w-1/2 p-4 cursor-pointer"

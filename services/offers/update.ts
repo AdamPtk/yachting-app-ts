@@ -10,14 +10,13 @@ const schema = Joi.object({
   price: Joi.number().greater(0).required(),
 });
 
-const create = async (payload: OfferPayload, userId: string) => {
+const update = async (airtableId: string, payload: OfferPayload) => {
   const validateOffer = await schema.validateAsync(payload);
-  const offer = await airDB('offers').create([
+  const offer = await airDB('offers').update([
     {
+      id: airtableId,
       fields: {
         ...validateOffer,
-        users: [userId],
-        status: 'inactive',
       },
     },
   ]);
@@ -25,4 +24,4 @@ const create = async (payload: OfferPayload, userId: string) => {
   return offer;
 };
 
-export default create;
+export default update;

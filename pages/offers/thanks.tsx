@@ -12,9 +12,7 @@ export default function OfferThanks() {
               Upon positive verification it will show in our listing.
             </h1>
             <Link href="/offers/my">
-              <button className="flex-shrink-0 text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg mt-10 sm:mt-0">
-                Go to your offers
-              </button>
+              <button className="btn-primary">Go to your offers</button>
             </Link>
           </div>
         </div>

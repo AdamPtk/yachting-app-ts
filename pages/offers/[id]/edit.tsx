@@ -1,10 +1,35 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
+import { GetServerSideProps } from 'next';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { getServerSession } from 'next-auth';
 import { useSession } from 'next-auth/react';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
+import getOffer from 'services/offers/get';
+import isAuthorized from 'services/offers/isAuthorized';
 import BaseLayout from 'components/BaseLayout';
 import Loader from 'components/Loader';
 
-export default function OfferNew() {
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  res,
+  query,
+}) => {
+  const session = await getServerSession(req, res, authOptions);
+  const offer = await getOffer(query.id as string);
+
+  if (!offer || !isAuthorized(offer, session)) {
+    return {
+      notFound: true,
+    };
+  }
+
+  return {
+    props: { offer },
+  };
+};
+
+const OfferEdit: React.FC<{ offer: Offer }> = ({ offer }) => {
   const [formProcessing, setFormProcessing] = useState(false);
   const [error, setError] = useState(false);
   const offerForm = useRef<HTMLFormElement>(null);
@@ -35,8 +60,8 @@ export default function OfferNew() {
       location: form.get('location'),
     };
 
-    const response = await fetch('/api/offers', {
-      method: 'POST',
+    const response = await fetch(`/api/offers/${offer.id}`, {
+      method: 'PUT',
       body: JSON.stringify(payload),
       headers: {
         'Content-Type': 'application/json',
@@ -44,7 +69,7 @@ export default function OfferNew() {
     });
 
     if (response.ok) {
-      router.push('/offers/thanks');
+      router.push(`/offers/${offer.id}`);
     } else {
       const payload = await response.json();
       setFormProcessing(false);
@@ -61,7 +86,7 @@ export default function OfferNew() {
           <div className="container px-5 py-24 mx-auto">
             <div className="flex flex-col text-center w-full mb-12">
               <h1 className="sm:text-3xl text-2xl font-medium title-font mb-4 text-gray-900">
-                Submit new offer
+                Edit offer
               </h1>
               <p className="lg:w-2/3 mx-auto leading-relaxed text-base">
                 Whatever cardigan tote bag tumblr hexagon brooklyn asymmetrical
@@ -85,6 +110,7 @@ export default function OfferNew() {
                     <select
                       name="category"
                       id="category"
+                      defaultValue={offer.category}
                       className="h-10 w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                     >
                       <option value="rent">For rent</option>
@@ -104,6 +130,7 @@ export default function OfferNew() {
                       type="text"
                       id="title"
                       name="title"
+                      defaultValue={offer.title}
                       required
                       className="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                     />
@@ -121,6 +148,7 @@ export default function OfferNew() {
                       type="text"
                       id="location"
                       name="location"
+                      defaultValue={offer.location}
                       required
                       className="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                     />
@@ -138,6 +166,7 @@ export default function OfferNew() {
                       type="text"
                       id="price"
                       name="price"
+                      defaultValue={offer.price}
                       required
                       className="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                     />
@@ -155,6 +184,7 @@ export default function OfferNew() {
                       type="text"
                       id="phone"
                       name="phone"
+                      defaultValue={offer.mobile}
                       required
                       className="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                     />
@@ -171,26 +201,35 @@ export default function OfferNew() {
                     <textarea
                       id="description"
                       name="description"
+                      defaultValue={offer.description}
                       required
                       className="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 h-32 text-base outline-none text-gray-700 py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out"
                     ></textarea>
                   </div>
                 </div>
-                <div className="p-2 w-full flex">
+                <div className="p-2 w-full flex justify-center">
                   <button
                     disabled={formProcessing}
-                    className="btn-primary mx-auto my-8"
+                    className="btn-primary mt-8 mr-6"
                   >
-                    {formProcessing ? 'Please wait...' : 'Submit offer'}
+                    {formProcessing ? 'Please wait...' : 'Edit offer'}
                   </button>
-                  {error && (
+                  <Link
+                    href={`/offers/${offer.id}`}
+                    className="btn-primary mt-8"
+                  >
+                    Go back
+                  </Link>
+                </div>
+                {error && (
+                  <div className="p-2 w-full">
                     <div className="flex justify-center w-full my-5">
                       <span className="w-full text-red-600">
-                        Offer not added: {error}
+                        Offer not edited: {error}
                       </span>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </form>
             </div>
           </div>
@@ -198,4 +237,6 @@ export default function OfferNew() {
       )}
     </BaseLayout>
   );
-}
+};
+
+export default OfferEdit;

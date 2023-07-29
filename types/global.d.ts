@@ -9,7 +9,17 @@ declare global {
   interface RegisterPayload extends LoginPayload {
     fullName: string;
   }
+
+  interface OfferPayload {
+    title: string;
+    category: string;
+    mobile: string;
+    price: number;
+    description: string;
+    location: string;
+  }
   interface Offer {
+    airtableId: string;
     title: string;
     status: string;
     id: number;
