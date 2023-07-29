@@ -9,7 +9,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         offset as string,
         category as string,
       );
-      console.log(offers);
 
       res.status(200).json({
         offers: offers.records.map((offer) => offer.fields),

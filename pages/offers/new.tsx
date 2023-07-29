@@ -34,8 +34,6 @@ export default function OfferNew() {
       location: form.get('location'),
     };
 
-    console.log('payload', payload);
-
     const response = await fetch('/api/offers', {
       method: 'POST',
       body: JSON.stringify(payload),

@@ -3,7 +3,7 @@ import { GetStaticProps } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-// import { useSession } from 'next-auth/react';
+import useSWR from 'swr';
 import BaseLayout from 'components/BaseLayout';
 import paginateOffers from 'services/offers/paginate';
 import { jsonFetcher } from 'utils';
@@ -25,8 +25,14 @@ export const getStaticProps: GetStaticProps<
 
 const AllOffers: React.FC<PaginatedOffersProps> = ({ offers, offset }) => {
   const { query } = useRouter();
-  // const { data } = useSWR('/api/offers/paginate', jsonFetcher, { initialData: offers });
-  const [currentOffers, setCurrentOffers] = useState(offers);
+  const { data }: { data: PaginatedOffersProps } = useSWR(
+    '/api/offers/paginate',
+    jsonFetcher,
+    {
+      fallbackData: { offers, offset },
+    },
+  );
+  const [currentOffers, setCurrentOffers] = useState(data.offers);
   const [currentOffset, setCurrentOffset] = useState(offset);
 
   const loadMore = async () => {
@@ -49,7 +55,7 @@ const AllOffers: React.FC<PaginatedOffersProps> = ({ offers, offset }) => {
 
   useEffect(() => {
     handleFilters();
-  }, [query]);
+  }, [query, data]);
 
   return (
     <BaseLayout>

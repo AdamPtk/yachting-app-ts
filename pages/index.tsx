@@ -1,12 +1,25 @@
-import BaseLayout from 'components/BaseLayout';
+import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import useSWR from 'swr';
 import getRecentOffers from 'services/offers/getRecent';
 import { jsonFetcher } from 'utils';
+import BaseLayout from 'components/BaseLayout';
+import { authOptions } from './api/auth/[...nextauth]';
+import { getServerSession } from 'next-auth';
 
-export const getStaticProps = async () => {
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const session = await getServerSession(req, res, authOptions);
+  if (session) {
+    return {
+      redirect: {
+        destination: '/offers',
+        permanent: false,
+      },
+    };
+  }
   const offers = await getRecentOffers(12);
+
   return {
     props: { offers },
   };

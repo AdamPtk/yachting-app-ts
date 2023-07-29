@@ -1,6 +1,7 @@
 import { FormEvent, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import BaseLayout from 'components/BaseLayout';
+import { signIn } from 'next-auth/react';
 
 export default function UserNew() {
   const [formProcessing, setFormProcessing] = useState(false);
@@ -37,7 +38,17 @@ export default function UserNew() {
     });
 
     if (response.ok) {
-      router.push('/');
+      const res = await signIn('credentials', {
+        redirect: false,
+        email: form.get('email'),
+        password: form.get('password'),
+      });
+
+      if (res && res.ok) {
+        router.push('/offers');
+      } else {
+        router.push('/');
+      }
     } else {
       const payload = await response.json();
       setFormProcessing(false);
