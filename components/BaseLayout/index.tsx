@@ -2,6 +2,7 @@ import { ReactNode, useState } from 'react';
 import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
 import classNames from 'classnames';
+import Loader from 'components/Loader';
 
 const TopNavigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -46,6 +47,12 @@ const TopNavigation = () => {
       >
         <div className="lg:inline-flex lg:flex-row lg:ml-auto lg:w-auto w-full lg:items-center items-start  flex flex-col lg:h-auto">
           <Link
+            href={'/offers'}
+            className="lg:inline-flex lg:w-auto w-full px-3 py-2 rounded text-gray-400 items-center justify-center hover:bg-gray-900 hover:text-white transition-all"
+          >
+            All offers
+          </Link>
+          <Link
             href={session ? '/offers/new' : '/user/signin'}
             className="lg:inline-flex lg:w-auto w-full px-3 py-2 rounded text-gray-400 items-center justify-center hover:bg-gray-900 hover:text-white transition-all"
           >
@@ -58,6 +65,14 @@ const TopNavigation = () => {
             className="lg:inline-flex lg:w-auto w-full px-3 py-2 rounded text-gray-400 items-center justify-center hover:bg-gray-900 hover:text-white transition-all"
           >
             <span>My offers</span>
+          </Link>
+        )}
+        {session && session.user.role === 'admin' && (
+          <Link
+            href="/admin/offers"
+            className="lg:inline-flex lg:w-auto w-full px-3 py-2 rounded text-gray-400 items-center justify-center hover:bg-gray-900 hover:text-white transition-all"
+          >
+            <span>Admin</span>
           </Link>
         )}
         {session && (
@@ -161,8 +176,10 @@ const Footer = () => (
 export default function BaseLayout({ children }: { children: ReactNode }) {
   return (
     <>
-      <TopNavigation />
-      {children}
+      <div className="min-h-screen flex flex-col">
+        <TopNavigation />
+        {children}
+      </div>
       <Footer />
     </>
   );
