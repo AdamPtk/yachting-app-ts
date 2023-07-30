@@ -18,11 +18,20 @@ declare global {
     description: string;
     location: string;
   }
+
+  interface ProductPaylaod {
+    id: string;
+    offerId: number;
+    quantity: number;
+  }
+
   interface Offer {
+    id: number;
     airtableId: string;
+    stripeCheckoutId: string;
+    stripeCheckoutStatus?: string;
     title: string;
     status: string;
-    id: number;
     mobile: string;
     price: number;
     description: string;
@@ -32,6 +41,14 @@ declare global {
     createdAt: string;
     updatedAt: string;
     'email (from users)': string[];
+  }
+
+  interface Product {
+    id: string;
+    name: string;
+    duration: number;
+    priceCents: number;
+    priceCurrency: string;
   }
 
   interface Record {

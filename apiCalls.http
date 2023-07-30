@@ -1,0 +1,39 @@
+POST http://localhost:3000/api/offers
+content-type: application/json
+
+{
+  "title": "Super fast boat",
+  "mobile": "12312321",
+  "category": "sale",
+  "description": "New boat",
+  "location": "Szczecin/PL",
+  "price": "123"
+}
+
+###
+
+POST http://localhost:3000/api/users
+content-type: application/json
+
+{
+  "email": "john@doe.com",
+  "password": "12312321",
+  "fullName": "John Doe"
+}
+
+###
+GET http://localhost:3000/api/offers/paginate
+###
+GET http://localhost:3000/api/admin/offers/paginate
+###
+GET http://localhost:3000/api/products
+
+###
+POST http://localhost:3000/api/checkout
+content-type: application/json
+
+{
+  "id": "recI2bRzb9pXNNnwF",
+  "offerId": 33,
+  "quantity": 1
+}

@@ -26,6 +26,12 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   const offer = await getOffer(params.id);
 
+  if (!offer) {
+    return {
+      notFound: true,
+    };
+  }
+
   return {
     revalidate: 10,
     props: {
